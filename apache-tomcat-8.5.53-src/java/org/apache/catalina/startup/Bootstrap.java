@@ -432,7 +432,14 @@ public final class Bootstrap {
     /**
      * Main method and entry point when starting Tomcat via the provided
      * scripts.
-     *
+     * Idea 启动tomcat添加jvm参数:
+     * -Dcatalina.home=catalina-home
+     * -Dcatalina.base=catalina-home
+     * -Djava.endorsed.dirs=catalina-home/endorsed
+     * -Djava.io.tmpdir=catalina-home/temp
+     * -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+     * -Djava.util.logging.config.file=catalina-home/conf/logging.properties
+     * 参考资料: https://blog.csdn.net/yekong1225/article/details/81000446
      * @param args Command line arguments to be processed
      */
     public static void main(String args[]) {

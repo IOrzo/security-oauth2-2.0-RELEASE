@@ -315,6 +315,7 @@ public class Catalina {
                             "setGlobalNamingResources",
                             "org.apache.catalina.deploy.NamingResourcesImpl");
 
+        // 参数className从配置文件获取
         digester.addObjectCreate("Server/Listener",
                                  null, // MUST be specified in the element
                                  "className");

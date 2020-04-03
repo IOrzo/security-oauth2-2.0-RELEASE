@@ -15,7 +15,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project name="Tomcat 8.5" default="deploy" basedir="."
+<project name="Tomcat 8.5" default="deploy" basedir=".."
   xmlns:if="ant:if" xmlns:unless="ant:unless">
 
   <!-- ===================== Initialize Property Values ==================== -->
@@ -31,7 +31,7 @@
   <!-- property values you may customize.                                    -->
   <property file="${user.home}/build.properties"/>
   <property file="build.properties"/>
-  <property file="build.properties.default"/>
+  <property file="../build.properties.default"/>
 
   <!-- Project Name -->
   <property name="project"               value="apache-tomcat" />
@@ -59,7 +59,7 @@
   <property name="final-src.name"        value="${project}-${version}-src" />
 
   <!-- Locations to create build artifacts -->
-  <property name="tomcat.home"           value="${basedir}"/>
+  <property name="tomcat.home"           value="/"/>
   <property name="tomcat-nb.home"        value="${basedir}/nbproject" />
   <property name="tomcat.output"         value="${basedir}/output"/>
   <property name="tomcat.build"          value="${tomcat.output}/build"/>
@@ -80,7 +80,7 @@
   <property name="test.reports"          value="${test.basedir}/logs"/>
   <property name="test.apr.loc"          value="${test.basedir}/bin/native"/>
   <!-- base directory for jdbc-pool -->
-  <property name="tomcat.jdbc.dir"       value="${basedir}/modules/jdbc-pool"/>
+  <property name="tomcat.jdbc.dir"       value="/modules/jdbc-pool"/>
   <!-- build output directory for jdbc-pool -->
   <property name="tomcat.pool"           value="${tomcat.output}/jdbc-pool"/>
 
@@ -549,9 +549,9 @@
         targetfile="${tomcat.manifests}/default.manifest" >
       <srcfiles file="${user.home}/build.properties" />
       <srcfiles file="${basedir}/build.properties" />
-      <srcfiles file="${basedir}/build.properties.default" />
-      <srcfiles file="${basedir}/build.xml" />
-      <srcfiles dir="${tomcat.home}/res/META-INF" >
+      <srcfiles file="/build.properties.default" />
+      <srcfiles file="/catalina-home/build.xml" />
+      <srcfiles dir="/res/META-INF" >
         <include name="*.manifest" />
         <include name="*.license" />
         <include name="*.notice" />
@@ -673,13 +673,13 @@
 
   <target name="compile-prepare">
     <!-- Add the builtin catalina.properties -->
-    <copy todir="java/org/apache/catalina/startup"
+    <copy todir="../java/org/apache/catalina/startup"
           file="conf/catalina.properties" encoding="ISO-8859-1">
       <filterset refid="version.filters"/>
     </copy>
     <!-- Copy jdbc-pool documentation -->
-    <copy tofile="webapps/docs/jdbc-pool.xml"
-          file="${tomcat.jdbc.dir}/doc/jdbc-pool.xml" encoding="UTF-8">
+    <copy tofile="catalina-home/webapps/docs/jdbc-pool.xml"
+          file="../modules/jdbc-pool/doc/jdbc-pool.xml" encoding="UTF-8">
       <filterset>
         <filter token="TOMCAT_PROJECT_DEST" value="project.xml"/>
       </filterset>
@@ -705,7 +705,7 @@
     <!-- Copy static resource files -->
     <copy todir="${tomcat.classes}" encoding="ISO-8859-1">
       <filterset refid="version.filters"/>
-      <fileset dir="java">
+      <fileset dir="../java">
         <include name="**/*.properties"/>
         <exclude name="**/LocalStrings*.properties"/>
         <exclude name="**/Messages*.properties"/>
@@ -719,7 +719,7 @@
     <!-- Convert the message files from UTF-8 to ASCII. This can be removed
     after upgrading to Java 9+ as the minimum JRE and specifying the encoding
     when loading the ResourceBundles -->
-    <native2ascii src="java" dest="${tomcat.classes}" includes="**/LocalStrings*.properties,**/Messages*.properties" encoding="UTF-8"/>
+    <native2ascii src="../java" dest="${tomcat.classes}" includes="**/LocalStrings*.properties,**/Messages*.properties" encoding="UTF-8"/>
 
   </target>
 
@@ -739,7 +739,7 @@
     <copy todir="${tomcat.manifests}" overwrite="yes" filtering="yes"
       encoding="ISO-8859-1">
       <filterset refid="version.filters"/>
-      <fileset dir="${tomcat.home}/res/META-INF" />
+      <fileset dir="/res/META-INF" />
     </copy>
 
   </target>
@@ -962,16 +962,16 @@
     </copy>
     <copy todir="${tomcat.build}/webapps/docs" encoding="ISO-8859-1">
       <filterset refid="version.filters"/>
-      <fileset dir=".">
+      <fileset dir="..">
         <include name="BUILDING.txt"/>
         <include name="RUNNING.txt"/>
       </fileset>
     </copy>
-    <copy tofile="${tomcat.build}/webapps/docs/RELEASE-NOTES.txt" file="RELEASE-NOTES" encoding="ISO-8859-1">
+    <copy tofile="${tomcat.build}/webapps/docs/RELEASE-NOTES.txt" file="../RELEASE-NOTES" encoding="ISO-8859-1">
       <filterset refid="version.filters"/>
     </copy>
     <copy tofile="${tomcat.build}/webapps/docs/mbeans-descriptors.dtd"
-            file="java/org/apache/tomcat/util/modeler/mbeans-descriptors.dtd" />
+            file="../java/org/apache/tomcat/util/modeler/mbeans-descriptors.dtd" />
 
     <copy   tofile="${tomcat.build}/webapps/docs/appdev/sample/build.xml"
               file="webapps/docs/appdev/build.xml.txt"/>
@@ -1091,7 +1091,7 @@
 
     <!-- Copy scripts -->
     <copy todir="${tomcat.build}/bin">
-      <fileset dir="bin">
+      <fileset dir="../bin">
          <exclude name="**/*.launch"/>
          <exclude name="**/*.sh"/>
          <exclude name="**/*.bat"/>
@@ -1099,7 +1099,7 @@
     </copy>
     <copy todir="${tomcat.build}/bin" encoding="ISO-8859-1">
       <filterset refid="version.filters"/>
-      <fileset dir="bin">
+      <fileset dir="../bin">
          <include name="**/*.sh"/>
          <include name="**/*.bat"/>
       </fileset>
@@ -1135,7 +1135,7 @@
       </fileset>
     </copy>
 
-    <copy tofile="${tomcat.build}/webapps/ROOT/RELEASE-NOTES.txt" file="RELEASE-NOTES" encoding="ISO-8859-1">
+    <copy tofile="${tomcat.build}/webapps/ROOT/RELEASE-NOTES.txt" file="../RELEASE-NOTES" encoding="ISO-8859-1">
       <filterset refid="version.filters"/>
     </copy>
 
@@ -1194,7 +1194,7 @@
   <target name="build-tomcat-jdbc" depends="package">
     <!-- build the jdbc-pool jar and source jar-->
     <echo message="Building Tomcat JDBC pool libraries"/>
-    <ant antfile="${tomcat.jdbc.dir}/build.xml" dir="${tomcat.jdbc.dir}"
+    <ant antfile="../modules/jdbc-pool/build.xml" dir="../modules/jdbc-pool"
          inheritAll="false" target="build">
       <property name="tomcat.pool" value="${tomcat.pool}" />
       <property name="tomcat.juli.jar" value="${tomcat-juli.jar}" />
@@ -1209,7 +1209,7 @@
   <target name="build-tomcat-jdbc-src">
     <!-- build the jdbc-pool source jar-->
     <echo message="Building Tomcat JDBC pool src JAR"/>
-    <ant antfile="${tomcat.jdbc.dir}/build.xml" dir="${tomcat.jdbc.dir}"
+    <ant antfile="../modules/jdbc-pool/build.xml" dir="../modules/jdbc-pool"
          inheritAll="false" target="build-src">
       <property name="tomcat.pool" value="${tomcat.pool}" />
       <property name="tomcat.juli.jar" value="${tomcat-juli.jar}" />
@@ -1307,8 +1307,8 @@
 
     <mkdir dir="${tomcat.embed}" />
 
-    <copy file="${basedir}/LICENSE" todir="${tomcat.embed}" />
-    <copy file="${basedir}/NOTICE" todir="${tomcat.embed}" />
+    <copy file="/LICENSE" todir="${tomcat.embed}" />
+    <copy file="/NOTICE" todir="${tomcat.embed}" />
     <copy file="${tomcat-dbcp.jar}" todir="${tomcat.embed}"
       failonerror="false"/>
     <copy file="${jdt.jar}" todir="${tomcat.embed}" />
@@ -1417,7 +1417,7 @@
       <include name="util/**" />
     </javac>
     <copy todir="${test.classes}">
-      <fileset dir="test">
+      <fileset dir="../test">
         <include name="META-INF/**"/>
         <include name="**/service-config.txt"/>
         <include name="**/logging-non-rotatable.properties"/>
@@ -1498,7 +1498,7 @@
       <or>
         <and>
           <length string="${test.openssl.path}" trim="true" length="0" when="gt"/>
-          <available file="${test.openssl.path}" property="test.openssl.exists"/>
+          <available file="build.xml" property="test.openssl.exists"/>
         </and>
         <and>
           <length string="${test.openssl.path}" trim="true" length="0" when="eq"/>
@@ -1518,11 +1518,11 @@
 
     <sequential>
       <mkdir dir="${test.reports}" />
-      <junit printsummary="yes" fork="yes" dir="." showoutput="${test.verbose}"
-        errorproperty="test.result.error"
-        failureproperty="test.result.failure"
-        haltonfailure="${test.haltonfailure}"
-        threads="${test.threads}">
+      <junit printsummary="yes" fork="yes" dir=".." showoutput="${test.verbose}"
+             errorproperty="test.result.error"
+             failureproperty="test.result.failure"
+             haltonfailure="${test.haltonfailure}"
+             threads="${test.threads}">
 
         <jvmarg value="${test.jvmarg.egd}"/>
         <jvmarg value="-Dfile.encoding=UTF-8"/>
@@ -1564,7 +1564,7 @@
            />
         <batchtest todir="${test.reports}" unless="test.entry">
           <!-- Include all by default -->
-          <fileset dir="test" includes="${test.name}">
+          <fileset dir="../test" includes="${test.name}">
             <!-- Exclude helper classes -->
             <exclude name="**/Tester*.java" />
             <!-- Exclude the tests known to fail -->
@@ -1623,7 +1623,7 @@
         <exclude name="lib/**/jetty*.jar" />
         <exclude name="lib/**/servlet-api*.jar" />
       </fileset>
-      <pathelement path="res/cobertura"/>
+      <pathelement path="../res/cobertura"/>
     </path>
 
     <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
@@ -1794,7 +1794,7 @@
     <!-- Copy the top-level documentation files -->
     <copy todir="${tomcat.dist}" encoding="ISO-8859-1">
       <filterset refid="version.filters"/>
-      <fileset dir=".">
+      <fileset dir="..">
         <include name="LICENSE"/>
         <include name="NOTICE"/>
         <include name="RELEASE-NOTES"/>
@@ -2085,7 +2085,7 @@ Apache Tomcat ${version} native binaries for Win64 AMD64/EMT64 platform.
 
     <!-- Main build script -->
     <copy todir="${tomcat.deployer}">
-      <fileset dir="${basedir}/res/deployer" />
+      <fileset dir="/res/deployer" />
     </copy>
 
     <!-- Copy deployer documentation -->
@@ -2107,7 +2107,7 @@ Apache Tomcat ${version} native binaries for Win64 AMD64/EMT64 platform.
 
     <!-- Tomcat source -->
     <copy todir="${tomcat.dist}/src">
-      <fileset dir="${basedir}" defaultexcludes="true">
+      <fileset dir="/" defaultexcludes="true">
         <not>
           <or>
             <filename name="**/.settings/**" />
@@ -2178,7 +2178,7 @@ skip.installer property in build.properties" />
   <target name="-installer-prep"
       unless="skip.installer" depends="dist-static,-installer-init">
     <copy todir="${tomcat.dist}">
-      <fileset dir="res">
+      <fileset dir="../res">
         <include name="INSTALLLICENSE" />
         <include name="*.bmp" />
         <include name="*.ico" />
@@ -2190,7 +2190,7 @@ skip.installer property in build.properties" />
     <copy file="${nsis.nsisdl.dll}" todir="${tomcat.dist}" />
     <copy file="${nsis.system.dll}" todir="${tomcat.dist}" />
     <copy file="${nsis.nsdialogs.dll}" todir="${tomcat.dist}" />
-    <copy file="res/tomcat.nsi" tofile="${tomcat.dist}/tomcat.nsi" overwrite="true" encoding="ISO-8859-1">
+    <copy file="../res/tomcat.nsi" tofile="${tomcat.dist}/tomcat.nsi" overwrite="true" encoding="ISO-8859-1">
       <filterset refid="version.filters"/>
     </copy>
     <fixcrlf srcdir="${tomcat.dist}" eol="crlf"
@@ -2290,19 +2290,19 @@ skip.installer property in build.properties" />
     depends="clean,release-init,dist-deployer,installer-sign,package-zip,package-winzip,package-tgz,package-deployer-zip,package-deployer-tgz,javadoc,package-docs-tgz,package-src-zip,package-src-tgz,package-src-jar"
     description="Create a Tomcat packaged distribution">
 
-    <copy file="KEYS"
+    <copy file="../KEYS"
          todir="${tomcat.release}/v${version}"/>
-    <copy file="RELEASE-NOTES"
+    <copy file="../RELEASE-NOTES"
          todir="${tomcat.release}/v${version}"
          encoding="ISO-8859-1">
       <filterset refid="version.filters"/>
     </copy>
-    <copy file="res/welcome.main.html"
+    <copy file="../res/welcome.main.html"
         tofile="${tomcat.release}/v${version}/README.html"
         encoding="UTF-8">
       <filterset refid="version.filters"/>
     </copy>
-    <copy file="res/welcome.bin.html"
+    <copy file="../res/welcome.bin.html"
         tofile="${tomcat.release}/v${version}/bin/README.html"
         encoding="UTF-8">
       <filterset refid="version.filters"/>
@@ -2725,11 +2725,11 @@ skip.installer property in build.properties" />
     <delete dir="${tomcat.output}" />
     <!-- Remove the copied catalina.properties -->
     <delete file="java/org/apache/catalina/startup/catalina.properties" />
-    <ant antfile="${tomcat.jdbc.dir}/build.xml" dir="${tomcat.jdbc.dir}" inheritAll="false" target="clean">
+    <ant antfile="../modules/jdbc-pool/build.xml" dir="../modules/jdbc-pool" inheritAll="false" target="clean">
       <property name="tomcat.pool" value="${tomcat.pool}" />
     </ant>
     <!-- remove jdbc-pool documentation -->
-    <delete file="webapps/docs/jdbc-pool.xml"/>
+    <delete file="catalina-home/webapps/docs/jdbc-pool.xml"/>
   </target>
 
 
@@ -2928,7 +2928,7 @@ skip.installer property in build.properties" />
 
   <target name="testexist">
     <echo message="Testing  for ${destfile}"/>
-    <available file="${destfile}" property="exist"/>
+    <available file="build.xml" property="exist"/>
   </target>
 
   <macrodef name="verifyChecksum">
@@ -3095,15 +3095,15 @@ skip.installer property in build.properties" />
     <local name="temp.file"/>
     <mkdir dir="${base.path}"/>
     <tempfile property="temp.file" destdir="${base.path}" prefix="download-" suffix=".zip"/>
-    <get src="${sourcefile}" httpusecaches="${trydownload.httpusecaches}" dest="${temp.file}"/>
+    <get src="${sourcefile}" httpusecaches="${trydownload.httpusecaches}" dest="build.xml"/>
     <verifyChecksum
       enabled="${checksum.enabled}"
       algorithm="${checksum.algorithm}" value="${checksum.value}"
       file="${temp.file}" name="${sourcefile}" />
 
-    <mkdir dir="${destdir}"/>
-    <unzip src="${temp.file}" dest="${destdir}"/>
-    <delete file="${temp.file}"/>
+    <mkdir dir="build.xml"/>
+    <unzip src="build.xml" dest="build.xml"/>
+    <delete file="build.xml"/>
   </target>
 
   <target name="downloadzip-2" unless="exist" depends="testexist">
@@ -3125,9 +3125,9 @@ skip.installer property in build.properties" />
       algorithm="${checksum.algorithm}" value="${checksum.value}"
       file="${temp.file}" name="${sourcefile.1}" />
 
-    <mkdir dir="${destdir}" />
-    <unzip src="${temp.file}" dest="${destdir}"/>
-    <delete file="${temp.file}"/>
+    <mkdir dir="build.xml" />
+    <unzip src="build.xml" dest="build.xml"/>
+    <delete file="build.xml"/>
   </target>
 
   <target name="downloadfile" unless="exist" depends="testexist,setproxy">
@@ -3135,14 +3135,14 @@ skip.installer property in build.properties" />
     <local name="temp.file"/>
     <mkdir dir="${base.path}"/>
     <tempfile property="temp.file" destdir="${base.path}" prefix="download-" suffix=".tmp"/>
-    <get src="${sourcefile}" httpusecaches="${trydownload.httpusecaches}" dest="${temp.file}"/>
+    <get src="${sourcefile}" httpusecaches="${trydownload.httpusecaches}" dest="build.xml"/>
     <verifyChecksum
       enabled="${checksum.enabled}"
       algorithm="${checksum.algorithm}" value="${checksum.value}"
       file="${temp.file}" name="${destfile}" />
 
-    <mkdir dir="${destdir}"/>
-    <move file="${temp.file}" tofile="${destfile}"/>
+    <mkdir dir="build.xml"/>
+    <move file="build.xml" tofile="build.xml"/>
   </target>
 
   <target name="downloadfile-2" unless="exist" depends="testexist">
@@ -3161,7 +3161,7 @@ skip.installer property in build.properties" />
       <param name="destfile" value="${temp.file}" />
     </antcall>
 
-    <available file="${temp.file}" property="exist"/>
+    <available file="build.xml" property="exist"/>
     <fail unless="exist" message="Failed to download [${destfile}]. All download sources are unavailable." />
 
     <verifyChecksum
@@ -3169,15 +3169,15 @@ skip.installer property in build.properties" />
       algorithm="${checksum.algorithm}" value="${checksum.value}"
       file="${temp.file}" name="${destfile}" />
 
-    <mkdir dir="${destdir}"/>
-    <move file="${temp.file}" tofile="${destfile}"/>
+    <mkdir dir="build.xml"/>
+    <move file="build.xml" tofile="build.xml"/>
   </target>
 
   <target name="trydownload.check" depends="setproxy">
     <condition property="trydownload.run">
       <and>
         <not>
-          <available file="${destfile}" />
+          <available file="build.xml" />
         </not>
         <http url="${sourcefile}" />
       </and>
@@ -3186,7 +3186,7 @@ skip.installer property in build.properties" />
 
   <target name="trydownload" if="trydownload.run" depends="trydownload.check">
     <!-- Downloads a file if not yet downloaded and the source URL is available -->
-    <get src="${sourcefile}" httpusecaches="${trydownload.httpusecaches}" dest="${destfile}" />
+    <get src="${sourcefile}" httpusecaches="${trydownload.httpusecaches}" dest="build.xml" />
   </target>
 
   <!-- ============================ IDE Support ============================ -->
@@ -3198,12 +3198,12 @@ skip.installer property in build.properties" />
           description="Prepares the source tree to be built in Eclipse">
 
     <!-- Copy the sample project files into the root directory -->
-    <copy file="${tomcat.home}/res/ide-support/eclipse/eclipse.project" tofile="${tomcat.home}/.project"/>
-    <copy file="${tomcat.home}/res/ide-support/eclipse/eclipse.classpath" tofile="${tomcat.home}/.classpath"/>
+    <copy file="/res/ide-support/eclipse/eclipse.project" tofile="${tomcat.home}/.project"/>
+    <copy file="/res/ide-support/eclipse/eclipse.classpath" tofile="${tomcat.home}/.classpath"/>
 
     <!-- Copy compiler settings file -->
     <mkdir dir="${tomcat.home}/.settings" />
-    <copy file="${tomcat.home}/res/ide-support/eclipse/org.eclipse.jdt.core.prefs.properties" tofile="${tomcat.home}/.settings/org.eclipse.jdt.core.prefs"/>
+    <copy file="/res/ide-support/eclipse/org.eclipse.jdt.core.prefs.properties" tofile="${tomcat.home}/.settings/org.eclipse.jdt.core.prefs"/>
 
     <echo>Eclipse project files created.
 Read the Building page on the Apache Tomcat documentation site for details on how to configure your Eclipse workspace.</echo>
@@ -3215,8 +3215,8 @@ Read the Building page on the Apache Tomcat documentation site for details on ho
           depends="download-compile, extras-webservices-prepare, download-test-compile"
           description="Creates project directory .idea for IntelliJ IDEA">
 
-    <copy todir="${tomcat.home}/.idea">
-      <fileset dir="${tomcat.home}/res/ide-support/idea"/>
+    <copy todir="/.idea">
+      <fileset dir="/res/ide-support/idea"/>
     </copy>
 
     <echo>IntelliJ IDEA project directory created. Please create PATH VARIABLES for
@@ -3255,10 +3255,10 @@ Use the "ide-netbeans-replace" target if you wish to overwrite them.</echo>
   <target name="-ide-netbeans-create"
           unless="tomcat-nb.home.exists">
     <!-- Unconditionally create or overwrite default NetBeans project files -->
-    <property name="tomcat-nb.dist" value="${tomcat.home}/res/ide-support/netbeans" />
+    <property name="tomcat-nb.dist" value="/res/ide-support/netbeans" />
     <mkdir dir="${tomcat-nb.home}/"/>
     <copy todir="${tomcat-nb.home}" overwrite="true">
-      <fileset dir="${tomcat-nb.dist}"/>
+      <fileset dir="../res/ide-support/netbeans"/>
     </copy>
     <echo>NetBeans project files created.
 Read the Building page on the Apache Tomcat documentation site for details on how to customise your NetBeans project.</echo>
