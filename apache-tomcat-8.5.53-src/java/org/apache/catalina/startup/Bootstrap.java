@@ -129,6 +129,7 @@ public final class Bootstrap {
 
     /**
      * Daemon reference.
+     * org.apache.catalina.startup.Catalina
      */
     private Object catalinaDaemon = null;
 
@@ -255,7 +256,7 @@ public final class Bootstrap {
 
         SecurityClassLoad.securityClassLoad(catalinaLoader);
 
-        // Load our startup class and call its process() method
+        // Load our startup class and call its process() methodCatalina
         if (log.isDebugEnabled())
             log.debug("Loading startup class");
         Class<?> startupClass = catalinaLoader.loadClass("org.apache.catalina.startup.Catalina");
@@ -300,6 +301,7 @@ public final class Bootstrap {
         if (log.isDebugEnabled()) {
             log.debug("Calling startup class " + method);
         }
+        // 调用org.apache.catalina.startup.Catalina.load()方法
         method.invoke(catalinaDaemon, param);
     }
 
@@ -436,6 +438,7 @@ public final class Bootstrap {
     public static void main(String args[]) {
 
         synchronized (daemonLock) {
+            // 创建Bootstrap对象
             if (daemon == null) {
                 // Don't set daemon until init() has completed
                 Bootstrap bootstrap = new Bootstrap();
@@ -460,7 +463,7 @@ public final class Bootstrap {
             if (args.length > 0) {
                 command = args[args.length - 1];
             }
-
+            // 启动Tomcat
             if (command.equals("startd")) {
                 args[args.length - 1] = "start";
                 daemon.load(args);
