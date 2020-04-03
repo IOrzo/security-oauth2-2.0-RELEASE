@@ -76,6 +76,7 @@ rem Don't override _RUNJAVA if the user has set it previously
 if not "%_RUNJAVA%" == "" goto gotRunJava
 rem Set standard command for invoking Java.
 rem Also note the quoting as JRE_HOME may contain spaces.
+rem 设置变量_RUNJAVA
 set _RUNJAVA="%JRE_HOME%\bin\java.exe"
 :gotRunJava
 

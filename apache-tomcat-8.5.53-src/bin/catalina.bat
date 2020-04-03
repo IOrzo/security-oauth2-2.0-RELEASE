@@ -108,9 +108,11 @@ rem                   Example (all one line)
 rem                   set TITLE=Tomcat.Cluster#1.Server#1 [%DATE% %TIME%]
 rem ---------------------------------------------------------------------------
 
+rem 设置临时变量,不会影响系统变量。以endlocal结束
 setlocal
 
 rem Suppress Terminate batch job on CTRL+C
+rem 无参数设置,直接跳转到mainEntry
 if not ""%1"" == ""run"" goto mainEntry
 if "%TEMP%" == "" goto mainEntry
 if exist "%TEMP%\%~nx0.run" goto mainEntry
@@ -123,12 +125,15 @@ set RETVAL=%ERRORLEVEL%
 del /Q "%TEMP%\%~nx0.Y" >NUL 2>&1
 exit /B %RETVAL%
 :mainEntry
+rem 删除临时文件TEMP=C:\Users\xx\AppData\Local\Temp
 del /Q "%TEMP%\%~nx0.run" >NUL 2>&1
 
 rem Guess CATALINA_HOME if not defined
+rem 设置变量CURRENT_DIR和CATALINA_HOME为当前目录
 set "CURRENT_DIR=%cd%"
 if not "%CATALINA_HOME%" == "" goto gotHome
 set "CATALINA_HOME=%CURRENT_DIR%"
+rem 跳转okHome
 if exist "%CATALINA_HOME%\bin\catalina.bat" goto okHome
 cd ..
 set "CATALINA_HOME=%cd%"
@@ -142,6 +147,7 @@ goto end
 :okHome
 
 rem Copy CATALINA_BASE from CATALINA_HOME if not defined
+rem 设置变量CATALINA_BASE
 if not "%CATALINA_BASE%" == "" goto gotBase
 set "CATALINA_BASE=%CATALINA_HOME%"
 :gotBase
@@ -181,12 +187,14 @@ echo Cannot find "%CATALINA_HOME%\bin\setclasspath.bat"
 echo This file is needed to run this program
 goto end
 :okSetclasspath
+rem 执行setclasspath.bat设置JAVA运行时环境变量
 call "%CATALINA_HOME%\bin\setclasspath.bat" %1
 if errorlevel 1 goto end
 
 rem Add on extra jar file to CLASSPATH
 rem Note that there are no quotes as we do not want to introduce random
 rem quotes into the CLASSPATH
+rem 设置环境变量CLASSPATH,并添加bootstrap.jar, bootstrap.jar目录为org/apache/catalina/startup
 if "%CLASSPATH%" == "" goto emptyClasspath
 set "CLASSPATH=%CLASSPATH%;"
 :emptyClasspath
@@ -212,6 +220,7 @@ set "JAVA_OPTS=%JAVA_OPTS% %JSSE_OPTS%"
 
 rem Register custom URL handlers
 rem Do this here so custom URL handles (specifically 'war:...') can be used in the security policy
+rem 设置JAVA_OPTS变量
 set "JAVA_OPTS=%JAVA_OPTS% -Djava.protocol.handler.pkgs=org.apache.catalina.webresources"
 
 if not "%LOGGING_CONFIG%" == "" goto noJuliConfig
@@ -243,7 +252,7 @@ set ENDORSED_PROP=java.endorsed.dirs
 :doneEndorsed
 
 rem ----- Execute The Requested Command ---------------------------------------
-
+rem 通过startup.bat启动,第一个参数为start,直接跳转到doStart
 echo Using CATALINA_BASE:   "%CATALINA_BASE%"
 echo Using CATALINA_HOME:   "%CATALINA_HOME%"
 echo Using CATALINA_TMPDIR: "%CATALINA_TMPDIR%"
@@ -321,6 +330,9 @@ goto execCmd
 :doStart
 shift
 if "%TITLE%" == "" set TITLE=Tomcat
+
+rem 设置启动命令start "Tomcat" java ...
+
 set _EXECJAVA=start "%TITLE%" %_RUNJAVA%
 if not ""%1"" == ""-security"" goto execCmd
 shift
@@ -368,7 +380,12 @@ if not "%SECURITY_POLICY_FILE%" == "" goto doSecurityJpda
 %_EXECJAVA% %LOGGING_CONFIG% %LOGGING_MANAGER% %JAVA_OPTS% %JPDA_OPTS% %CATALINA_OPTS% %DEBUG_OPTS% -D%ENDORSED_PROP%="%JAVA_ENDORSED_DIRS%" -classpath "%CLASSPATH%" -Dcatalina.base="%CATALINA_BASE%" -Dcatalina.home="%CATALINA_HOME%" -Djava.io.tmpdir="%CATALINA_TMPDIR%" %MAINCLASS% %CMD_LINE_ARGS% %ACTION%
 goto end
 :doSecurityJpda
+
+rem 执行命令,大概内容为: start "Tomcat" java org.apache.catalina.startup.Bootstrap
+
 %_EXECJAVA% %LOGGING_CONFIG% %LOGGING_MANAGER% %JAVA_OPTS% %JPDA_OPTS% %CATALINA_OPTS% %DEBUG_OPTS% -D%ENDORSED_PROP%="%JAVA_ENDORSED_DIRS%" -classpath "%CLASSPATH%" -Djava.security.manager -Djava.security.policy=="%SECURITY_POLICY_FILE%" -Dcatalina.base="%CATALINA_BASE%" -Dcatalina.home="%CATALINA_HOME%" -Djava.io.tmpdir="%CATALINA_TMPDIR%" %MAINCLASS% %CMD_LINE_ARGS% %ACTION%
 goto end
 
 :end
+
+rem 参考资料: https://www.cnblogs.com/tanshaoshenghao/p/10932306.html
